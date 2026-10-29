@@ -2,23 +2,52 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Confidentialité : Sans Trace</title>
+  <meta name="theme-color" content="#0e1411">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="top"><a class="brand" href="./"><span>Sans Trace</span></a></header>
+  <header class="top">
+    <a class="brand" href="./"><span>Sans Trace</span></a>
+    <a class="back" href="./">Retour à l'outil</a>
+  </header>
   <main class="prose">
     <h1>Confidentialité</h1>
-    <p>Les textes que tu colles et les images que tu déposes sont traités uniquement dans ton navigateur. Ils ne sont ni envoyés à un serveur, ni enregistrés, ni analysés.</p>
-    <h2>Ce que le site collecte</h2>
-    <p>Rien de personnel. L'hébergeur (Vercel) peut conserver des journaux techniques standards, comme l'adresse IP et la date de la requête, pour assurer le fonctionnement et la sécurité du service.</p>
-    <h2>Cookies</h2>
-    <p>Aucun cookie de suivi n'est utilisé.</p>
+    <p class="muted">Dernière mise à jour : 29 octobre 2026</p>
+
+    <h2>Tes textes et tes images</h2>
+    <p>Ils sont traités uniquement dans ton navigateur. Ils ne sont ni envoyés à un serveur, ni enregistrés, ni analysés. Quand tu fermes la page, ils disparaissent.</p>
+
+    <h2>Le compteur de pays</h2>
+    <p>À ta première utilisation de l'outil pendant une session, le site envoie une requête vide à son propre serveur. L'hébergeur (Vercel) indique alors le pays de la connexion. Seuls ces éléments sont enregistrés, dans une base Neon :</p>
+    <ul>
+      <li>le code du pays (par exemple FR ou CM) et le nombre d'utilisations de ce pays ;</li>
+      <li>le pays et l'heure de la dernière utilisation.</li>
+    </ul>
+    <p>L'adresse IP n'est ni lue ni enregistrée par le site, et aucun identifiant ne relie une utilisation à une personne. Ces chiffres sont affichés sur la page <a href="stats.html">Statistiques</a>. Quand un pays compte très peu d'utilisateurs, le pays de la dernière utilisation peut être reconnaissable : si cela te gêne, n'utilise pas l'outil sans VPN.</p>
+
+    <h2>Cookies et stockage</h2>
+    <p>Aucun cookie. Le navigateur garde en mémoire de session un simple indicateur pour ne compter qu'une fois par session, et un cache local des fichiers du site pour que l'application fonctionne hors ligne. Tu peux les effacer à tout moment dans les réglages du navigateur.</p>
+
+    <h2>Journaux de l'hébergeur</h2>
+    <p>Vercel peut conserver des journaux techniques standards (adresse IP, date, page demandée) pour assurer le fonctionnement et la sécurité du service. Ils sont gérés par Vercel selon sa propre politique de confidentialité.</p>
+
+    <h2>Services tiers</h2>
+    <p>Aucune publicité, aucun outil d'analyse, aucune police ou bibliothèque chargée depuis un autre site.</p>
+
+    <h2>Tes droits</h2>
+    <p>Comme aucune donnée personnelle n'est enregistrée par le site, il n'y a rien à consulter ni à supprimer de ton côté. Pour toute question, ouvre une discussion sur le dépôt GitHub du projet.</p>
+
     <h2>Ce que l'outil ne garantit pas</h2>
-    <p>Sans Trace retire des traces visibles et des métadonnées. Il ne garantit pas qu'un texte ou une image échappera à un outil de détection, et il ne retire pas les filigranes invisibles intégrés aux pixels. Il reste de ta responsabilité de respecter les règles de l'école, de l'employeur ou de la plateforme où tu publies.</p>
-    <p><a href="./">Retour à l'outil</a></p>
+    <p>Sans Trace retire des traces visibles et des métadonnées. Il ne garantit pas qu'un texte ou une image échappera à un outil de détection et il ne retire pas les filigranes invisibles intégrés aux pixels.</p>
   </main>
+  <footer>
+    <span>Sans Trace, par Abiye Enzo</span>
+    <nav class="links"><a href="stats.html">Statistiques</a><a href="legal.html">Mentions légales</a><a href="terms.html">Conditions</a></nav>
+  </footer>
+  <script src="js/pwa.js"></script>
 </body>
 </html>

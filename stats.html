@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Statistiques : Sans Trace</title>
+  <meta name="theme-color" content="#0e1411">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./">
+      <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#16231c"/><path d="M9 21c3-8 6-8 7-3s4 3 7-5" fill="none" stroke="#4ade80" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Sans Trace</span>
+    </a>
+    <a class="back" href="./">Retour à l'outil</a>
+  </header>
+
+  <main>
+    <h1>Statistiques d'utilisation</h1>
+    <p class="lead">Un compteur anonyme par pays. Le pays est déduit par l'hébergeur au moment de la visite. Aucune adresse IP, aucun texte et aucune image ne sont enregistrés.</p>
+
+    <section class="cards">
+      <div class="card">
+        <span class="muted">Utilisations au total</span>
+        <strong id="total">...</strong>
+      </div>
+      <div class="card">
+        <span class="muted">Dernière utilisation depuis</span>
+        <strong id="last">...</strong>
+      </div>
+    </section>
+
+    <h2>Pays les plus actifs</h2>
+    <ol id="top" class="countries"></ol>
+  </main>
+
+  <footer>
+    <span>Compteur anonyme, aucun cookie.</span>
+    <nav class="links"><a href="privacy.html">Confidentialité</a><a href="legal.html">Mentions légales</a><a href="terms.html">Conditions</a></nav>
+  </footer>
+
+  <script src="js/stats.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

@@ -4,15 +4,15 @@ const T = require('../js/text-clean.js');
 const I = require('../js/image-clean.js');
 
 test('retire phrases d assistant et tirets longs (fr)', () => {
-  const r = T.process("Bien sûr ! Voici une version améliorée :\n\nLe projet avance — et vite. Il est important de noter que le budget tient.\n\nJ'espère que cela t'aide.");
+  const r = T.process("Bien sûr ! Voici une version améliorée :\n\nLe projet avance \u2014 et vite. Il est important de noter que le budget tient.\n\nJ'espère que cela t'aide.");
   assert.ok(!r.text.includes('Voici'));
-  assert.ok(!r.text.includes('—'));
+  assert.ok(!r.text.includes('\u2014'));
   assert.ok(!r.text.includes("J'espère"));
   assert.ok(r.text.includes('Le budget tient'));
 });
 
 test('markdown, invisibles et citations', () => {
-  const r = T.process('## Titre\n**Gras** texte​ ici :contentReference[oaicite:0]{index=0} https://x.com/a?utm_source=chatgpt.com');
+  const r = T.process('## Titre\n**Gras** texte\u200B ici :contentReference[oaicite:0]{index=0} https://x.com/a?utm_source=chatgpt.com');
   assert.strictEqual(r.text, 'Titre\nGras texte ici https://x.com/a');
 });
 
@@ -70,4 +70,16 @@ test('webp : EXIF retiré et taille RIFF recalculée', () => {
   assert.ok(r.findings.some((f) => f.kind === 'exif'));
   assert.strictEqual(Buffer.from(r.out).readUInt32LE(4), r.out.length - 8);
   assert.strictEqual(r.out[20], 0);
+});
+
+test('detect : texte tres charge en tics = niveau eleve, texte simple = faible', () => {
+  const ai = "It is important to note that we leverage robust tools. Furthermore, we delve into the tapestry of seamless solutions. Moreover, this plays a crucial role in today's fast-paced world. Additionally, we utilize pivotal methods to underscore the testament to quality. In conclusion, it is worth noting that these tools are robust and seamless for everyone who wants to leverage them every day.";
+  assert.strictEqual(T.detect(ai).level, 'high');
+  const human = "Hier j'ai rate le bus. Du coup marche jusqu'au bureau sous la pluie, trempe, de mauvaise humeur. Au moins le cafe etait chaud. Ma collegue m'a pret un pull sec, ce qui m'a sauve la journee. Le soir, on a mange des beignets devant le match en riant de tout et de rien jusqu'a minuit passe.";
+  assert.strictEqual(T.detect(human).level, 'low');
+  assert.strictEqual(T.detect('trop court').level, 'insufficient');
+});
+
+test('refuse un texte demesure', () => {
+  assert.throws(() => T.process('a'.repeat(T.MAX_CHARS + 1)), RangeError);
 });

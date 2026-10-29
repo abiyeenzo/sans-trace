@@ -6,5 +6,8 @@
   "scripts": {
     "test": "node --test test/*.test.js",
     "dev": "npx serve ."
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.2.0"
   }
 }

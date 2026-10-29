@@ -108,7 +108,11 @@
     return { sentences: lens.length, mean: Math.round(mean * 10) / 10, variation: mean ? Math.round((Math.sqrt(variance) / mean) * 100) / 100 : 0 };
   }
 
+  const MAX_CHARS = 200000;
+
   function process(input, options) {
+    if (typeof input !== 'string') throw new TypeError('le texte doit etre une chaine');
+    if (input.length > MAX_CHARS) throw new RangeError('texte trop long');
     const o = Object.assign({}, DEFAULTS, options);
     const lang = o.lang === 'auto' ? detectLang(input) : o.lang;
     const counts = {};
@@ -132,7 +136,7 @@
     }
 
     if (o.invisible) {
-      text = sub(text, /[​‌‍⁠﻿­᠎⁡-⁤‪-‮⁦-⁩]|[\u{E0000}-\u{E007F}]/gu, '', 'invisible');
+      text = sub(text, /[\u200B\u200C\u200D\u2060\uFEFF\u00AD\u180E\u2061-\u2064\u202A-\u202E\u2066-\u2069]|[\u{E0000}-\u{E007F}]/gu, '', 'invisible');
     }
 
     if (o.boilerplate) {
@@ -166,12 +170,12 @@
     }
 
     if (o.dashes) {
-      text = sub(text, /(\S)[ \t]*—[ \t]*(?=\S)/gu, '$1, ', 'dashes');
-      text = sub(text, /(\S) – (?=\S)/gu, '$1, ', 'dashes');
+      text = sub(text, /(\S)[ \t]*\u2014[ \t]*(?=\S)/gu, '$1, ', 'dashes');
+      text = sub(text, /(\S) \u2013 (?=\S)/gu, '$1, ', 'dashes');
     }
 
     if (o.emoji) {
-      text = sub(text, /[\p{Extended_Pictographic}️]/gu, '', 'emoji');
+      text = sub(text, /[\p{Extended_Pictographic}\uFE0F]/gu, '', 'emoji');
     }
 
     if (o.humanize) {
@@ -198,7 +202,22 @@
     return { text, lang, counts, removedLines, stats: stats(text) };
   }
 
-  const api = { process, detectLang, stats, DEFAULTS };
+  // Rough style estimate. Humans also write like this, so the result is only an indication.
+  function detect(input) {
+    const words = (input.match(/\p{L}+/gu) || []).length;
+    if (words < 40) return { level: 'insufficient', words, signals: 0, per100: 0, variation: 0 };
+    const r = process(input, { boilerplate: true, citations: true, invisible: true, markdown: false, dashes: true, emoji: false, humanize: true, contractions: false });
+    const c = r.counts;
+    const signals = (c.boilerplate || 0) + (c.citations || 0) + (c.invisible || 0) + (c.dashes || 0) + (c.humanize || 0);
+    const st = stats(input);
+    const per100 = Math.round((signals / words) * 1000) / 10;
+    const regular = st.sentences >= 5 && st.variation < 0.3;
+    const score = per100 + (regular ? 1 : 0);
+    const level = score < 0.8 ? 'low' : score < 2 ? 'medium' : 'high';
+    return { level, words, signals, per100, variation: st.variation, regular };
+  }
+
+  const api = { process, detect, detectLang, stats, DEFAULTS, MAX_CHARS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.SansTraceText = api;
 })(typeof self !== 'undefined' ? self : this);

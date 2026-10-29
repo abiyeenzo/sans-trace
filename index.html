@@ -2,10 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Sans Trace : nettoyer et humaniser textes et images</title>
   <meta name="description" content="Retire les résidus d'IA des textes (formules toutes faites, tirets, caractères invisibles) et les métadonnées des images (EXIF, C2PA, prompts). Tout se passe dans ton navigateur.">
+  <meta name="theme-color" content="#0e1411">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -76,12 +79,19 @@
   </main>
 
   <footer>
-    <span>Tout est traité dans ton navigateur, rien n'est envoyé.</span>
-    <a href="privacy.html">Confidentialité</a>
+    <span>Textes et images traités dans ton navigateur. Par Abiye Enzo, code ouvert non commercial.</span>
+    <nav class="links">
+      <a href="stats.html">Statistiques</a>
+      <a href="privacy.html">Confidentialité</a>
+      <a href="legal.html">Mentions légales</a>
+      <a href="terms.html">Conditions</a>
+      <a href="https://github.com/abiyeenzo/sans-trace" rel="noopener noreferrer">Code source</a>
+    </nav>
   </footer>
 
   <script src="js/text-clean.js"></script>
   <script src="js/image-clean.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
 </body>
 </html>

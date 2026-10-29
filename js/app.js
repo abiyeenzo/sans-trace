@@ -5,6 +5,17 @@
   const T = window.SansTraceText;
   const I = window.SansTraceImage;
 
+  const MAX_IMAGE_BYTES = 40 * 1024 * 1024;
+
+  // Anonymous per-country counter, sent once per session. No body, no identifier.
+  function countVisit() {
+    try {
+      if (sessionStorage.getItem('st-counted')) return;
+      sessionStorage.setItem('st-counted', '1');
+    } catch (_) { return; }
+    fetch('/api/hit', { method: 'POST', keepalive: true }).catch(() => {});
+  }
+
   // Tabs
   const tabs = { text: [$('tab-text'), $('panel-text')], image: [$('tab-image'), $('panel-image')] };
   Object.entries(tabs).forEach(([, [btn]) => {
@@ -70,10 +81,42 @@
     }
   }
 
+  const LEVELS = {
+    low: 'faible',
+    medium: 'moyen',
+    high: 'élevé',
+  };
+
+  function renderDetect(box, input) {
+    const d = T.detect(input);
+    const p = document.createElement('p');
+    p.className = 'detect';
+    if (d.level === 'insufficient') {
+      p.textContent = "Indice de style IA : texte trop court pour estimer (moins de 40 mots).";
+    } else {
+      p.textContent = 'Indice de style IA du texte d\'origine : ' + LEVELS[d.level] + '. ' + d.signals + ' tics repérés pour ' + d.words + ' mots. C\'est une estimation : un humain écrit parfois ainsi, et une IA peut écrire autrement.';
+    }
+    box.appendChild(p);
+  }
+
   function runText() {
-    const r = T.process($('in').value, readOptions());
+    const input = $('in').value;
+    let r;
+    try {
+      r = T.process(input, readOptions());
+    } catch (e) {
+      $('out').value = '';
+      const box = $('report');
+      box.hidden = false;
+      box.textContent = 'Texte trop long (limite : ' + T.MAX_CHARS.toLocaleString('fr-FR') + ' caractères).';
+      return;
+    }
     $('out').value = r.text;
     renderReport(r);
+    if (input.trim()) {
+      renderDetect($('report'), input);
+      countVisit();
+    }
   }
   $('in').addEventListener('input', runText);
   document.querySelectorAll('.opts input, .opts select').forEach((el) => el.addEventListener('change', runText));
@@ -112,6 +155,7 @@
     $('files').appendChild(li);
 
     try {
+      if (file.size > MAX_IMAGE_BYTES) throw new RangeError('fichier trop volumineux');
       const bytes = new Uint8Array(await file.arrayBuffer());
       const res = I.clean(bytes);
       let blob, ext, findings;
@@ -126,6 +170,7 @@
 
       const tags = document.createElement('div');
       tags.className = 'tags';
+      const aiTraces = findings.some((f) => f.ai);
       if (!findings.length) findings = [{ label: 'Aucune métadonnée trouvée' }];
       findings.forEach((f) => {
         const t = document.createElement('span');
@@ -134,6 +179,13 @@
         tags.appendChild(t);
       });
       left.appendChild(tags);
+      const verdict = document.createElement('div');
+      verdict.className = 'detect';
+      verdict.textContent = aiTraces
+        ? "Traces de provenance IA trouvées dans les métadonnées (elles ont été retirées)."
+        : "Aucune trace de provenance IA dans les métadonnées. Cela ne prouve pas que l'image est réelle.";
+      left.appendChild(verdict);
+      countVisit();
       const size = document.createElement('div');
       size.className = 'muted';
       size.textContent = fmt(file.size) + ' vers ' + fmt(blob.size);
@@ -148,7 +200,7 @@
     } catch (e) {
       const err = document.createElement('div');
       err.className = 'muted';
-      err.textContent = "Impossible de lire ce fichier.";
+      err.textContent = e instanceof RangeError ? 'Fichier trop volumineux (limite : 40 Mo).' : 'Impossible de lire ce fichier.';
       left.appendChild(err);
     }
   }
