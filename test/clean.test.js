@@ -83,3 +83,23 @@ test('detect : texte tres charge en tics = niveau eleve, texte simple = faible',
 test('refuse un texte demesure', () => {
   assert.throws(() => T.process('a'.repeat(T.MAX_CHARS + 1)), RangeError);
 });
+
+test('nouvelles regles : formules francaises et anglaises', () => {
+  const fr = T.process("Dans un monde en constante évolution, il est essentiel de comprendre l'enjeu. Sans aucun doute, afin de réussir, il faut agir.");
+  assert.ok(!/constante évolution|afin de|sans aucun doute/i.test(fr.text), fr.text);
+  assert.ok(fr.text.includes('Pour réussir'));
+  const en = T.process('This cutting-edge, meticulous approach is vital. It is essential to navigate the complex landscape of data.');
+  assert.ok(!/cutting-edge|meticulous|navigate/i.test(en.text), en.text);
+  assert.ok(en.text.includes('You need to'));
+});
+
+test('highlight : repere les tics, tirets et phrases d assistant', () => {
+  const segs = T.highlight('Furthermore, we delve into it \u2014 and more.\nI hope this helps!');
+  const flagged = segs.filter((s) => s.why).map((s) => s.t);
+  assert.ok(flagged.some((t) => /Furthermore/.test(t)), JSON.stringify(flagged));
+  assert.ok(flagged.some((t) => /delve into/.test(t)), JSON.stringify(flagged));
+  assert.ok(flagged.includes('\u2014'), JSON.stringify(flagged));
+  assert.ok(flagged.some((t) => /hope this helps/.test(t)), JSON.stringify(flagged));
+  assert.strictEqual(segs.map((s) => (s.why && s.t === '[invisible]' ? '' : s.t)).join(''), 'Furthermore, we delve into it \u2014 and more.\nI hope this helps!');
+  assert.strictEqual(T.highlight('Il pleut ce matin.').filter((s) => s.why).length, 0);
+});

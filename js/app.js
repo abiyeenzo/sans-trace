@@ -87,8 +87,28 @@
     high: 'élevé',
   };
 
+  function renderMarked(input) {
+    const box = $('marked-box');
+    const out = $('marked');
+    out.replaceChildren();
+    let flagged = 0;
+    T.highlight(input).forEach((seg) => {
+      if (!seg.why) { out.appendChild(document.createTextNode(seg.t)); return; }
+      flagged += 1;
+      const m = document.createElement('mark');
+      m.title = seg.why;
+      m.textContent = seg.t;
+      out.appendChild(m);
+    });
+    box.hidden = flagged === 0;
+  }
+
+  let lastDetect = null;
+  let lastLang = 'fr';
+
   function renderDetect(box, input) {
     const d = T.detect(input);
+    lastDetect = d;
     const p = document.createElement('p');
     p.className = 'detect';
     if (d.level === 'insufficient') {
@@ -113,11 +133,33 @@
     }
     $('out').value = r.text;
     renderReport(r);
-    if (input.trim()) {
+    lastLang = r.lang;
+    const hasText = input.trim().length > 0;
+    if (hasText) {
       renderDetect($('report'), input);
       countVisit();
     }
+    $('feedback').hidden = !hasText;
+    if (hasText) renderMarked(input); else $('marked-box').hidden = true;
   }
+  $('feedback').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!lastDetect) return;
+    const pick = (name) => document.querySelector('input[name="' + name + '"]:checked').value;
+    const helpful = { yes: true, no: false, skip: null }[pick('fb-helpful')];
+    const status = $('fb-status');
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label: pick('fb-label'), lang: lastLang, level: lastDetect.level, signals: lastDetect.signals, words: lastDetect.words, helpful }),
+      });
+      status.textContent = res.ok ? 'Merci, retour envoyé.' : "Envoi impossible pour le moment.";
+    } catch (_) {
+      status.textContent = "Envoi impossible pour le moment.";
+    }
+    setTimeout(() => { status.textContent = ''; }, 4000);
+  });
   $('in').addEventListener('input', runText);
   document.querySelectorAll('.opts input, .opts select').forEach((el) => el.addEventListener('change', runText));
   $('copy').addEventListener('click', async () => {

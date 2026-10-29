@@ -92,3 +92,16 @@ textarea { font-size: 16px; }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Feedback form */
+.feedback { margin-top: 20px; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; }
+.feedback .fb-title { margin: 0; font-size: .92rem; }
+.feedback fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.feedback legend { color: var(--muted); font-size: .85rem; padding: 0; margin-bottom: 4px; }
+.feedback label { display: flex; align-items: center; gap: 6px; font-size: .92rem; min-height: 32px; }
+.feedback .btn { justify-self: start; }
+
+/* Highlighted passages */
+.marked-box { margin-top: 20px; }
+.marked { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; max-height: 360px; overflow: auto; }
+mark { background: rgba(251, 191, 36, .28); color: inherit; border-bottom: 2px solid var(--warn); border-radius: 3px; padding: 0 2px; cursor: help; }
