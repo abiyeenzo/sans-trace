@@ -1,0 +1,18 @@
+name: Nouvelle regle de texte ou de langue
+description: Un tic de style d'IA ou une langue a ajouter
+labels: [enhancement, good first issue]
+body:
+  - type: input
+    id: lang
+    attributes:
+      label: Langue
+      placeholder: Francais, English, Espanol...
+    validations:
+      required: true
+  - type: textarea
+    id: phrase
+    attributes:
+      label: Formule ou tic a traiter
+      description: Donne la phrase d'origine et par quoi la remplacer. Un exemple ecrit par toi.
+    validations:
+      required: true

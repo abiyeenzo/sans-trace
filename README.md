@@ -26,6 +26,8 @@ Code sous licence [PolyForm Noncommercial 1.0.0](LICENSE). Tu peux lire, install
 
 ## Contribuer
 
+Des idées pour commencer : ajouter une langue ([guide](docs/ADD-A-LANGUAGE.md)), enrichir les règles, tester des images, améliorer l'accessibilité. Voir la [feuille de route](ROADMAP.md) et les tickets marqués "good first issue".
+
 Lis [CONTRIBUTING.md](CONTRIBUTING.md). Chaque pull request passe des vérifications automatiques (tests, règles de politique, analyse de sécurité, recherche de secrets), puis le mainteneur confirme.
 
 ## Signaler une faille
