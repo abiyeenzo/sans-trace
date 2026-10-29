@@ -18,7 +18,7 @@
 
   // Tabs
   const tabs = { text: [$('tab-text'), $('panel-text')], image: [$('tab-image'), $('panel-image')] };
-  Object.entries(tabs).forEach(([, [btn]) => {
+  Object.values(tabs).forEach(([btn]) => {
     btn.addEventListener('click', () => {
       Object.values(tabs).forEach(([b, p]) => {
         const on = b === btn;

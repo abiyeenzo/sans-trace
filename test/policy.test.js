@@ -37,3 +37,12 @@ test('autorise fetch vers /api/ uniquement', () => {
   const dir = tmp({ 'js/a.js': "fetch('/api/hit', { method: 'POST' });" });
   assert.deepStrictEqual(check(dir), []);
 });
+
+test('tous les scripts du site ont une syntaxe valide', () => {
+  const { execFileSync } = require('node:child_process');
+  const root = path.join(__dirname, '..');
+  const files = ['sw.js', ...fs.readdirSync(path.join(root, 'js')).map((f) => 'js/' + f), ...fs.readdirSync(path.join(root, 'api')).map((f) => 'api/' + f)];
+  for (const f of files) {
+    execFileSync(process.execPath, ['--check', path.join(root, f)], { stdio: 'pipe' });
+  }
+});
