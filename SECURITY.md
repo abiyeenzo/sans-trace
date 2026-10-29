@@ -2,7 +2,7 @@
 
 ## Signaler une faille
 
-Utilise le signalement privé de GitHub : onglet **Security**, puis **Report a vulnerability** sur le dépôt `abiyeenzo/sans-trace`. N'ouvre pas d'issue publique et ne publie pas de détails avant la correction.
+Utilise le signalement privé de GitHub : onglet **Security**, puis **Report a vulnerability** sur le dépôt `abiyeenzo/sans-trace`. N'ouvre pas d'issue publique et ne publie pas de détails avant la correction. Si tu ne peux pas utiliser GitHub, écris à abiyeenzo@gmail.com avec "Faille Sans Trace" en objet, sans joindre de données privées.
 
 Indique : ce que tu as trouvé, les étapes pour le reproduire, l'impact, et si possible une idée de correctif.
 
