@@ -60,6 +60,31 @@
       </div>
 
       <div id="report" class="report" hidden></div>
+
+      <section id="marked-box" class="marked-box" hidden>
+        <h2>Passages repérés dans ton texte</h2>
+        <p class="muted">Survole un passage surligné pour voir pourquoi il est repéré. Un humain écrit parfois ainsi : c'est un indice, pas une preuve.</p>
+        <div id="marked" class="marked" tabindex="0"></div>
+      </section>
+
+      <form id="feedback" class="feedback" hidden>
+        <p class="fb-title">Aide-nous à améliorer l'outil. Seul ton choix est envoyé, jamais ton texte.</p>
+        <fieldset>
+          <legend>Ce texte d'origine est</legend>
+          <label><input type="radio" name="fb-label" value="ai"> écrit par une IA</label>
+          <label><input type="radio" name="fb-label" value="human"> écrit par moi</label>
+          <label><input type="radio" name="fb-label" value="mixed"> mélangé</label>
+          <label><input type="radio" name="fb-label" value="unknown" checked> je ne sais pas</label>
+        </fieldset>
+        <fieldset>
+          <legend>Le résultat sonne naturel ?</legend>
+          <label><input type="radio" name="fb-helpful" value="yes"> oui</label>
+          <label><input type="radio" name="fb-helpful" value="no"> non</label>
+          <label><input type="radio" name="fb-helpful" value="skip" checked> sans avis</label>
+        </fieldset>
+        <button type="submit" class="btn alt">Envoyer mon retour</button>
+        <span id="fb-status" class="muted" role="status"></span>
+      </form>
     </section>
 
     <section id="panel-image" role="tabpanel" aria-labelledby="tab-image" hidden>

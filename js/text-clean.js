@@ -45,6 +45,17 @@
       [/\btirer parti de\b/giu, 'profiter de'],
       [/\bun (?:large|vaste) éventail de\b/giu, 'beaucoup de'],
       [/\brobustes?\b/giu, (m) => (/s$/i.test(m) ? 'solides' : 'solide')],
+      [/\bdans un monde (?:en constante évolution|en perpétuel changement|de plus en plus connecté)/giu, "aujourd'hui"],
+      [/\b(?:sans aucun doute|il va sans dire que),?\s*/giu, ''],
+      [/\bil est (?:essentiel|primordial|indispensable) de (?=\p{L})/giu, 'il faut '],
+      [/\bun enjeu (?:majeur|crucial|central)\b/giu, 'un vrai sujet'],
+      [/\bplonger au cœur de\b/giu, 'regarder de près'],
+      [/\bà la croisée de\b/giu, 'entre'],
+      [/\bune véritable révolution\b/giu, 'un gros changement'],
+      [/\b(?:afin de|dans le but de)\b/giu, 'pour'],
+      [/\bétant donné que\b/giu, 'comme'],
+      [/\ben raison du fait que\b/giu, 'parce que'],
+      [/\bà l['’]heure actuelle\b/giu, "aujourd'hui"],
     ],
     en: [
       [/\b(?:it is important to note that|it['’]s important to note that|it['’]s worth noting that|it is worth noting that|it should be noted that)\s*/giu, ''],
@@ -67,6 +78,17 @@
       [/\ba wide (?:range|array) of\b/giu, 'many'],
       [/\bgame-changer\b/giu, 'big change'],
       [/\bunlock(?:s|ing)? the potential of\b/giu, 'make the most of'],
+      [/\bit(?:['’]s| is) (?:crucial|essential|vital) to\b/giu, 'you need to'],
+      [/\bnavigat(?:e|es|ing) the (?:complex )?(?:landscape|world) of\b/giu, 'deal with'],
+      [/\bembark(?:s|ed|ing)? on a journey\b/giu, 'start'],
+      [/\bever-evolving\b/giu, 'changing'],
+      [/\bcutting-edge\b/giu, 'new'],
+      [/\bgroundbreaking\b/giu, 'new'],
+      [/\bholistic\b/giu, 'full'],
+      [/\bmeticulous(ly)?\b/giu, (m, ly) => (ly ? 'carefully' : 'careful')],
+      [/\bintricate\b/giu, 'complex'],
+      [/\bvibrant\b/giu, 'lively'],
+      [/\bbustling\b/giu, 'busy'],
     ],
   };
 
@@ -202,6 +224,59 @@
     return { text, lang, counts, removedLines, stats: stats(text) };
   }
 
+  // Splits the original text into segments, flagging the passages the cleaner would touch.
+  function highlight(input) {
+    if (typeof input !== 'string') throw new TypeError('le texte doit etre une chaine');
+    if (input.length > MAX_CHARS) throw new RangeError('texte trop long');
+    const lang = detectLang(input);
+    const ranges = [];
+    const scan = (re, why, invisible) => {
+      const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
+      let m;
+      while ((m = g.exec(input))) {
+        if (!m[0].length) { g.lastIndex++; continue; }
+        const trimmed = m[0].replace(/\s+$/, '');
+        if (trimmed.length) ranges.push([m.index, m.index + trimmed.length, why, !!invisible]);
+      }
+    };
+
+    let offset = 0;
+    for (const line of input.split('\n')) {
+      const inter = INTERJECTION[lang];
+      const lead = inter ? inter.exec(line) : null;
+      if (lead && lead[0].trim()) ranges.push([offset + lead[0].length - lead[0].trimStart().length, offset + lead[0].trimEnd().length, "phrase d'assistant", false]);
+      const rest = lead ? line.slice(lead[0].length) : line;
+      const short = rest.trim().length <= 200;
+      const isLead = LEAD[lang] && LEAD[lang].test(rest) && /:\s*$/.test(rest) && short;
+      const isCloser = CLOSER[lang] && CLOSER[lang].test(rest) && short;
+      if ((isLead || isCloser) && line.trim()) ranges.push([offset + (line.length - line.trimStart().length), offset + line.trimEnd().length, "phrase d'assistant", false]);
+      offset += line.length + 1;
+    }
+
+    for (const [re] of HUMANIZE[lang] || []) scan(re, 'tic de style courant', false);
+    scan(/\u2014/u, 'tiret long', false);
+    scan(/[\u200B\u200C\u200D\u2060\uFEFF\u00AD\u180E\u2061-\u2064\u202A-\u202E\u2066-\u2069]|[\u{E0000}-\u{E007F}]/u, 'caractere invisible', true);
+    scan(/\uE200[^\uE201]*\uE201|:contentReference\[oaicite:\d+\]\{[^}]*\}|\u3010[^\u3011]*\u3011/u, 'residu de citation', false);
+    scan(/[?&]utm_source=(?:chatgpt\.com|openai|claude\.ai|claude|copilot|perplexity|gemini)/i, 'lien suivi par une IA', false);
+
+    ranges.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+    const merged = [];
+    for (const r of ranges) {
+      const last = merged[merged.length - 1];
+      if (last && r[0] < last[1]) { if (r[1] > last[1]) last[1] = r[1]; } else merged.push(r.slice());
+    }
+
+    const out = [];
+    let pos = 0;
+    for (const [s, e, why, invisible] of merged) {
+      if (s > pos) out.push({ t: input.slice(pos, s) });
+      out.push({ t: invisible ? '[invisible]' : input.slice(s, e), why });
+      pos = e;
+    }
+    if (pos < input.length) out.push({ t: input.slice(pos) });
+    return out;
+  }
+
   // Rough style estimate. Humans also write like this, so the result is only an indication.
   function detect(input) {
     const words = (input.match(/\p{L}+/gu) || []).length;
@@ -217,7 +292,7 @@
     return { level, words, signals, per100, variation: st.variation, regular };
   }
 
-  const api = { process, detect, detectLang, stats, DEFAULTS, MAX_CHARS };
+  const api = { process, detect, highlight, detectLang, stats, DEFAULTS, MAX_CHARS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.SansTraceText = api;
 })(typeof self !== 'undefined' ? self : this);
