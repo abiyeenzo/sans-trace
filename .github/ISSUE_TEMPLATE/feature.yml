@@ -1,0 +1,11 @@
+name: Idee de fonction
+description: Une amelioration pour l'outil
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Ton idee
+      description: Rappel, le projet reste non commercial, sans envoi de contenu, et sans outil pour tromper des detecteurs.
+    validations:
+      required: true

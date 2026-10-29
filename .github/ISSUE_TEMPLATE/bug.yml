@@ -1,0 +1,23 @@
+name: Bug
+description: Quelque chose ne marche pas comme prevu
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Ce qui se passe
+      description: Decris le probleme et ce que tu attendais.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Comment le reproduire
+      description: N'ajoute pas de texte ou d'image prive. Un exemple court suffit.
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Navigateur et appareil
+      placeholder: Firefox 130 sur Android 14
