@@ -24,10 +24,13 @@ jobs:
         run: node scripts/policy-check.js
       - name: Tests
         run: npm test
-      - name: Secrets
-        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Secrets (gitleaks, version et empreinte epinglees)
+        run: |
+          curl -fsSL -o gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz
+          echo "9991e0b2903da4c8f6122b5c3186448b927a5da4deef1fe45271c3793f4ee29c  gitleaks.tgz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/gl" && tar -xzf gitleaks.tgz -C "$RUNNER_TEMP/gl" gitleaks
+          rm gitleaks.tgz
+          "$RUNNER_TEMP/gl/gitleaks" git --no-banner --redact --verbose .
 
   dependency-review:
     if: github.event_name == 'pull_request'
