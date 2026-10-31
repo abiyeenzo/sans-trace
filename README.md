@@ -9,7 +9,8 @@ Site en ligne : https://sans-trace.vercel.app
 ## Ce que fait Sans Trace
 
 - **Texte** (français et anglais) : retire les phrases d'assistant, les résidus de citations, les caractères invisibles, le Markdown, les tirets longs, et remplace les tics de style les plus courants.
-- **Images** (JPEG, PNG, WebP) : retire les métadonnées (EXIF avec GPS, XMP, Content Credentials C2PA, prompts écrits dans les PNG) sans toucher aux pixels.
+- **Images** (JPEG, PNG, WebP) : retire les métadonnées (EXIF avec GPS, XMP, Content Credentials C2PA, prompts écrits dans les PNG) sans toucher aux pixels. Un rapport liste chaque bloc retiré avec sa taille, signale les positions GPS et les traces IA.
+- **Documents** (PDF, DOCX, XLSX, PPTX) : vide l'auteur, le logiciel, les dates, les propriétés personnalisées et les métadonnées XMP. Le contenu n'est pas modifié. Les PDF chiffrés et les champs stockés dans un flux compressé sont signalés, pas traités.
 - **Détection** : repère les traces de provenance IA dans les images et donne un indice de style pour les textes. Ce sont des estimations, pas des preuves.
 
 ## Ce que Sans Trace ne fait pas

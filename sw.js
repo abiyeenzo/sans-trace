@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'sans-trace-v1';
+const CACHE = 'sans-trace-v2';
 const SHELL = [
   './',
   'index.html',
@@ -11,6 +11,7 @@ const SHELL = [
   'css/style.css',
   'js/text-clean.js',
   'js/image-clean.js',
+  'js/doc-clean.js',
   'js/app.js',
   'js/stats.js',
   'js/pwa.js',

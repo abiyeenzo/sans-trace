@@ -6,6 +6,7 @@ Pistes ouvertes aux contributions. Chacune a une issue.
 - Plus de tics de style en francais et en anglais, avec des tests.
 - Interface en anglais, avec un selecteur de langue.
 - Nettoyage des metadonnees pour AVIF, HEIC et GIF.
+- Documents : traiter les PDF dont les metadonnees sont dans un flux compresse, et retirer la miniature des fichiers Office.
 - Fichiers de test reels pour les images (JPEG, PNG, WebP) sans donnees privees.
 - Audit d'accessibilite (clavier, lecteurs d'ecran, contrastes).
 
