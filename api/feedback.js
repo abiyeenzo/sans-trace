@@ -27,7 +27,7 @@ module.exports = async function feedback(req, res) {
   }
   const helpful = b.helpful === true || b.helpful === false ? b.helpful : null;
 
-  if (!process.env.DATABASE_URL) return res.status(204).end();
+  if (!process.env.DATABASE_URL) return res.status(503).end();
   try {
     const sql = neon(process.env.DATABASE_URL);
     await sql`

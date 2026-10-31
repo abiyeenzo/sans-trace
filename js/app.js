@@ -109,6 +109,7 @@
   function renderDetect(box, input) {
     const d = T.detect(input);
     lastDetect = d;
+    lastLang = T.detectLang(input);
     const p = document.createElement('p');
     p.className = 'detect';
     if (d.level === 'insufficient') {
@@ -129,11 +130,13 @@
       const box = $('report');
       box.hidden = false;
       box.textContent = 'Texte trop long (limite : ' + T.MAX_CHARS.toLocaleString('fr-FR') + ' caractères).';
+      lastDetect = null;
+      $('feedback').hidden = true;
+      $('marked-box').hidden = true;
       return;
     }
     $('out').value = r.text;
     renderReport(r);
-    lastLang = r.lang;
     const hasText = input.trim().length > 0;
     if (hasText) {
       renderDetect($('report'), input);

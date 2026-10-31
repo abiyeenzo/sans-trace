@@ -13,8 +13,8 @@ const feedback = require('../api/feedback.js');
 const ok = { label: 'human', lang: 'fr', level: 'low', signals: 3, words: 120, helpful: true };
 const req = (body, extra) => Object.assign({ method: 'POST', headers: { host: 'x.test' }, body }, extra);
 
-test('feedback : accepte un retour valide', async () => {
-  assert.strictEqual(await call(feedback, req(ok)), 204);
+test('feedback : sans base configuree, ne pretend pas avoir stocke', async () => {
+  assert.strictEqual(await call(feedback, req(ok)), 503);
 });
 
 test('feedback : refuse GET, valeurs inconnues et origine etrangere', async () => {
