@@ -22,6 +22,8 @@ jobs:
           node-version: 24
       - name: Politique du projet
         run: node scripts/policy-check.js
+      - name: Dependances
+        run: npm ci --ignore-scripts
       - name: Tests
         run: npm test
       - name: Secrets (gitleaks, version et empreinte epinglees)
