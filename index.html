@@ -20,6 +20,7 @@
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-text" aria-selected="true" aria-controls="panel-text">Texte</button>
       <button role="tab" id="tab-image" aria-selected="false" aria-controls="panel-image">Images</button>
+      <button role="tab" id="tab-doc" aria-selected="false" aria-controls="panel-doc">Documents</button>
     </nav>
   </header>
 
@@ -101,6 +102,21 @@
 
       <p class="note">Limites : une image générée peut aussi porter un filigrane invisible dans ses pixels. Sans Trace ne cherche pas à le retirer. Les formats autres que JPEG, PNG et WebP sont convertis en PNG.</p>
     </section>
+
+    <section id="panel-doc" role="tabpanel" aria-labelledby="tab-doc" hidden>
+      <h1>Des documents sans signature</h1>
+      <p class="lead">Retire l'auteur, le logiciel, les dates et les propriétés personnalisées des PDF, DOCX, XLSX et PPTX. Le contenu du document n'est pas modifié.</p>
+
+      <div id="drop-doc" class="drop" tabindex="0">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
+        <p>Dépose des documents ici ou <label for="file-doc" class="link">choisis des fichiers</label></p>
+        <input id="file-doc" type="file" accept=".pdf,.docx,.xlsx,.pptx,application/pdf" multiple hidden>
+      </div>
+
+      <ul id="files-doc" class="files"></ul>
+
+      <p class="note">Limites : le texte, les images intégrées, les commentaires et l'historique de révisions restent tels quels. Les PDF chiffrés ne sont pas traités, et un champ stocké dans un flux compressé est signalé sans être modifié.</p>
+    </section>
   </main>
 
   <footer>
@@ -117,6 +133,7 @@
 
   <script src="js/text-clean.js"></script>
   <script src="js/image-clean.js"></script>
+  <script src="js/doc-clean.js"></script>
   <script src="js/app.js"></script>
   <script src="js/pwa.js"></script>
 </body>

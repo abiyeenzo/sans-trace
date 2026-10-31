@@ -44,6 +44,10 @@ textarea:focus, select:focus, .btn:focus-visible, .drop:focus-visible { outline:
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .tag { font-size: .78rem; border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; color: var(--muted); }
 .tag.ai { border-color: var(--warn); color: var(--warn); }
+.removed { display: grid; gap: 4px; margin-top: 8px; font-size: .86rem; }
+.removed .row { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); }
+.removed .row.ai, .removed .row.sensitive { color: var(--warn); }
+.removed .row span:last-child { white-space: nowrap; }
 .note { color: var(--muted); font-size: .88rem; max-width: 70ch; }
 footer { display: flex; justify-content: space-between; gap: 12px; padding: 18px 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
 .prose { max-width: 70ch; }

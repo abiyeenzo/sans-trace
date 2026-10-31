@@ -44,6 +44,7 @@
   // Each handler walks the container once and returns { findings, out }.
   function jpeg(b, keepOrientation) {
     const findings = [];
+    const notes = [];
     const parts = [b.subarray(0, 2)];
     let i = 2;
     let orientation = 1;
@@ -58,34 +59,38 @@
       if (m === 0xe1 && body.startsWith('Exif')) {
         const info = exifInfo(b, i + 10, i + 2 + len);
         orientation = info.orientation;
-        findings.push({ kind: 'exif', label: info.gps ? 'EXIF avec position GPS' : 'EXIF (appareil, date, logiciel)' });
+        findings.push({ kind: 'exif', label: info.gps ? 'EXIF avec position GPS' : 'EXIF (appareil, date, logiciel)', sensitive: info.gps, bytes: 2 + len });
         drop = true;
       } else if (m === 0xe1 && body.includes('xmp')) {
-        findings.push({ kind: 'xmp', label: 'XMP', ai: AI_HINTS.test(body) });
+        findings.push({ kind: 'xmp', label: 'XMP', ai: AI_HINTS.test(body), bytes: 2 + len });
         drop = true;
       } else if (m === 0xeb) {
-        findings.push({ kind: 'c2pa', label: 'Content Credentials (C2PA)', ai: true });
+        findings.push({ kind: 'c2pa', label: 'Content Credentials (C2PA)', ai: true, bytes: 2 + len });
         drop = true;
       } else if (m === 0xfe) {
-        findings.push({ kind: 'comment', label: 'Commentaire JPEG', ai: AI_HINTS.test(body) });
+        findings.push({ kind: 'comment', label: 'Commentaire JPEG', ai: AI_HINTS.test(body), bytes: 2 + len });
         drop = true;
       } else if (m === 0xed) {
-        findings.push({ kind: 'iptc', label: 'Photoshop / IPTC' });
+        findings.push({ kind: 'iptc', label: 'Photoshop / IPTC', bytes: 2 + len });
         drop = true;
       } else if ((m >= 0xe3 && m <= 0xea) || m === 0xec) {
-        findings.push({ kind: 'app', label: 'Segment APP' + (m - 0xe0) });
+        findings.push({ kind: 'app', label: 'Segment APP' + (m - 0xe0), bytes: 2 + len });
         drop = true;
       }
       if (!drop) parts.push(seg);
       i += 2 + len;
     }
-    if (keepOrientation && orientation > 1 && orientation <= 8) parts.splice(1, 0, orientationExif(orientation));
+    if (keepOrientation && orientation > 1 && orientation <= 8) {
+      parts.splice(1, 0, orientationExif(orientation));
+      notes.push("Orientation de l'image conservée (seul son indicateur est gardé)");
+    }
     parts.push(b.subarray(i));
-    return { findings, out: concat(parts) };
+    return { findings, notes, out: concat(parts) };
   }
 
   function png(b) {
     const findings = [];
+    const notes = [];
     const parts = [b.subarray(0, 8)];
     let i = 8;
     const DROP = new Set(['tEXt', 'zTXt', 'iTXt', 'eXIf', 'caBX', 'tIME']);
@@ -106,18 +111,19 @@
           label = 'Texte PNG (' + key + ')';
           ai = /^(parameters|prompt|workflow|Software|Comment|Description)$/i.test(key) || AI_HINTS.test(ascii(data, 0, 2048));
         }
-        findings.push({ kind: type, label, ai });
+        findings.push({ kind: type, label, ai, bytes: 12 + len });
       } else {
         parts.push(b.subarray(i, end));
       }
       i = end;
       if (type === 'IEND') break;
     }
-    return { findings, out: concat(parts) };
+    return { findings, notes, out: concat(parts) };
   }
 
   function webp(b) {
     const findings = [];
+    const notes = [];
     const parts = [];
     let i = 12;
     while (i + 8 <= b.length) {
@@ -125,9 +131,10 @@
       const size = le32(b, i + 4);
       const end = i + 8 + size + (size & 1);
       let chunk = b.subarray(i, Math.min(end, b.length));
-      if (cc === 'EXIF') findings.push({ kind: 'exif', label: 'EXIF' });
-      else if (cc === 'XMP ') findings.push({ kind: 'xmp', label: 'XMP', ai: AI_HINTS.test(ascii(b, i + 8, i + 8 + Math.min(size, 4096))) });
-      else if (cc === 'C2PA') findings.push({ kind: 'c2pa', label: 'Content Credentials (C2PA)', ai: true });
+      const bytes = 8 + size + (size & 1);
+      if (cc === 'EXIF') findings.push({ kind: 'exif', label: 'EXIF', bytes });
+      else if (cc === 'XMP ') findings.push({ kind: 'xmp', label: 'XMP', ai: AI_HINTS.test(ascii(b, i + 8, i + 8 + Math.min(size, 4096))), bytes });
+      else if (cc === 'C2PA') findings.push({ kind: 'c2pa', label: 'Content Credentials (C2PA)', ai: true, bytes });
       else {
         if (cc === 'VP8X') { chunk = chunk.slice(); chunk[8] &= ~0x0c; }
         parts.push(chunk);
@@ -139,7 +146,7 @@
     head.set(b.subarray(0, 12));
     const total = body.length + 4;
     head[4] = total & 255; head[5] = (total >> 8) & 255; head[6] = (total >> 16) & 255; head[7] = (total >> 24) & 255;
-    return { findings, out: concat([head, body]) };
+    return { findings, notes, out: concat([head, body]) };
   }
 
   function concat(parts) {
@@ -157,7 +164,7 @@
     if (type === 'jpeg') return Object.assign({ type }, jpeg(bytes, keepOrientation));
     if (type === 'png') return Object.assign({ type }, png(bytes));
     if (type === 'webp') return Object.assign({ type }, webp(bytes));
-    return { type: null, findings: [], out: bytes };
+    return { type: null, findings: [], notes: [], out: bytes };
   }
 
   const api = { clean, detectType };
