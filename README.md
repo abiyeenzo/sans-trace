@@ -4,6 +4,8 @@ Outil gratuit qui nettoie les traces d'IA dans les textes, les images et les doc
 
 **[Essayer en ligne : sans-trace.vercel.app](https://sans-trace.vercel.app)**
 
+*English: the interface is available in English (EN button, top right). Sans Trace removes AI traces from text and strips metadata (EXIF, GPS, C2PA) from images and documents, 100% in your browser.*
+
 ![Démo : un texte généré par une IA nettoyé en un instant](docs/media/demo.gif)
 
 Créé et maintenu par **Abiye Enzo** : [abiyeenzo.vercel.app](https://abiyeenzo.vercel.app) | [abiyeenzo.github.io](https://abiyeenzo.github.io) | abiyeenzo@gmail.com

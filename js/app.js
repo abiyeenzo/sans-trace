@@ -5,6 +5,9 @@
   const T = window.SansTraceText;
   const I = window.SansTraceImage;
   const D = window.SansTraceDoc;
+  const L = window.SansTraceI18n;
+  const t = L.t;
+  L.init(document);
 
   const MAX_IMAGE_BYTES = 40 * 1024 * 1024;
 
@@ -30,16 +33,6 @@
   });
 
   // Text
-  const LABELS = {
-    boilerplate: "phrases d'assistant retirées",
-    citations: 'résidus de citation retirés',
-    invisible: 'caractères invisibles retirés',
-    markdown: 'éléments Markdown retirés',
-    dashes: 'tirets longs remplacés',
-    emoji: 'emojis retirés',
-    humanize: 'tics de style remplacés',
-  };
-
   function readOptions() {
     const o = { lang: $('o-lang').value };
     ['boilerplate', 'citations', 'invisible', 'markdown', 'dashes', 'emoji', 'humanize', 'contractions'].forEach((k) => {
@@ -54,39 +47,33 @@
     if (!$('in').value.trim()) { box.hidden = true; return; }
     box.hidden = false;
     const h = document.createElement('h2');
-    h.textContent = 'Ce qui a changé (' + (r.lang === 'fr' ? 'français' : 'anglais') + ')';
+    h.textContent = t('report.title', { lang: t(r.lang === 'fr' ? 'lang.fr' : 'lang.en') });
     box.appendChild(h);
     const ul = document.createElement('ul');
     const entries = Object.entries(r.counts);
     if (!entries.length) {
       const li = document.createElement('li');
-      li.textContent = 'Aucune trace détectée.';
+      li.textContent = t('report.none');
       ul.appendChild(li);
     }
     entries.forEach(([k, n]) => {
       const li = document.createElement('li');
-      li.textContent = n + ' ' + LABELS[k];
+      li.textContent = t('count.' + k, { n });
       ul.appendChild(li);
     });
     r.removedLines.forEach((l) => {
       const li = document.createElement('li');
-      li.textContent = 'Ligne retirée : ' + l;
+      li.textContent = t('report.line', { line: l });
       ul.appendChild(li);
     });
     box.appendChild(ul);
     if (r.stats.sentences >= 5 && r.stats.variation < 0.35) {
       const p = document.createElement('p');
       p.className = 'muted';
-      p.textContent = 'Les phrases ont une longueur très régulière (variation ' + r.stats.variation + '). Un mélange de phrases courtes et longues, écrit à la main, rend le texte plus naturel.';
+      p.textContent = t('report.regular', { v: r.stats.variation });
       box.appendChild(p);
     }
   }
-
-  const LEVELS = {
-    low: 'faible',
-    medium: 'moyen',
-    high: 'élevé',
-  };
 
   function renderMarked(input) {
     const box = $('marked-box');
@@ -97,7 +84,7 @@
       if (!seg.why) { out.appendChild(document.createTextNode(seg.t)); return; }
       flagged += 1;
       const m = document.createElement('mark');
-      m.title = seg.why;
+      m.title = L.tr(seg.why);
       m.textContent = seg.t;
       out.appendChild(m);
     });
@@ -114,9 +101,9 @@
     const p = document.createElement('p');
     p.className = 'detect';
     if (d.level === 'insufficient') {
-      p.textContent = "Indice de style IA : texte trop court pour estimer (moins de 40 mots).";
+      p.textContent = t('detect.short');
     } else {
-      p.textContent = 'Indice de style IA du texte d\'origine : ' + LEVELS[d.level] + '. ' + d.signals + ' tics repérés pour ' + d.words + ' mots. C\'est une estimation : un humain écrit parfois ainsi, et une IA peut écrire autrement.';
+      p.textContent = t('detect.result', { level: t('level.' + d.level), signals: d.signals, words: d.words });
     }
     box.appendChild(p);
   }
@@ -130,7 +117,7 @@
       $('out').value = '';
       const box = $('report');
       box.hidden = false;
-      box.textContent = 'Texte trop long (limite : ' + T.MAX_CHARS.toLocaleString('fr-FR') + ' caractères).';
+      box.textContent = t('toolong', { max: T.MAX_CHARS.toLocaleString(L.lang === 'fr' ? 'fr-FR' : 'en-US') });
       lastDetect = null;
       $('feedback').hidden = true;
       $('marked-box').hidden = true;
@@ -158,27 +145,28 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ label: pick('fb-label'), lang: lastLang, level: lastDetect.level, signals: lastDetect.signals, words: lastDetect.words, helpful }),
       });
-      status.textContent = res.ok ? 'Merci, retour envoyé.' : "Envoi impossible pour le moment.";
+      status.textContent = res.ok ? t('fb.thanks') : t('fb.fail');
     } catch (_) {
-      status.textContent = "Envoi impossible pour le moment.";
+      status.textContent = t('fb.fail');
     }
     setTimeout(() => { status.textContent = ''; }, 4000);
   });
   $('in').addEventListener('input', runText);
+  document.addEventListener('sans-trace:lang', runText);
   document.querySelectorAll('.opts input, .opts select').forEach((el) => el.addEventListener('change', runText));
   $('copy').addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText($('out').value);
-      $('copied').textContent = 'Copié';
+      $('copied').textContent = t('copied');
     } catch (_) {
       $('out').select();
-      $('copied').textContent = 'Sélectionné, copie avec Ctrl+C';
+      $('copied').textContent = t('copied.select');
     }
     setTimeout(() => { $('copied').textContent = ''; }, 2500);
   });
 
   // Files (images and documents)
-  const fmt = (n) => (n < 1024 ? n + ' o' : n < 1048576 ? (n / 1024).toFixed(1) + ' Ko' : (n / 1048576).toFixed(1) + ' Mo');
+  const fmt = (n) => (n < 1024 ? n + ' ' + t('unit.b') : n < 1048576 ? (n / 1024).toFixed(1) + ' ' + t('unit.kb') : (n / 1048576).toFixed(1) + ' ' + t('unit.mb'));
 
   async function viaCanvas(file) {
     const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
@@ -187,7 +175,7 @@
     c.height = bmp.height;
     c.getContext('2d').drawImage(bmp, 0, 0);
     const blob = await new Promise((res) => c.toBlob(res, 'image/png'));
-    return { blob, ext: 'png', findings: [{ label: 'Métadonnées retirées par conversion en PNG' }], notes: [] };
+    return { blob, ext: 'png', findings: [{ label: t('file.png') }], notes: [] };
   }
 
   async function cleanImage(file, bytes) {
@@ -224,14 +212,14 @@
     if (!findings.length) {
       const none = document.createElement('div');
       none.className = 'row';
-      none.textContent = 'Aucune métadonnée trouvée';
+      none.textContent = t('file.none');
       list.appendChild(none);
     }
     findings.forEach((f) => {
       const row = document.createElement('div');
       row.className = 'row' + (f.ai ? ' ai' : '') + (f.sensitive ? ' sensitive' : '');
       const what = document.createElement('span');
-      what.textContent = f.label + (f.detail ? ' : ' + f.detail : '');
+      what.textContent = L.tr(f.label) + (f.detail ? ': ' + f.detail : '');
       row.appendChild(what);
       const size = document.createElement('span');
       size.textContent = f.bytes ? fmt(f.bytes) : '';
@@ -242,17 +230,15 @@
     notes.forEach((n) => {
       const p = document.createElement('div');
       p.className = 'muted';
-      p.textContent = n;
+      p.textContent = L.tr(n);
       left.appendChild(p);
     });
     const verdict = document.createElement('div');
     verdict.className = 'detect';
     if (aiTraces) {
-      verdict.textContent = 'Traces de provenance IA trouvées (elles ont été retirées).';
-    } else if (isImage) {
-      verdict.textContent = "Aucune trace de provenance IA dans les métadonnées. Cela ne prouve pas que l'image est réelle.";
+      verdict.textContent = t('file.ai');
     } else {
-      verdict.textContent = 'Aucune trace de provenance IA dans les métadonnées. Cela ne prouve pas que le contenu est écrit à la main.';
+      verdict.textContent = t(isImage ? 'file.noai.img' : 'file.noai.doc');
     }
     left.appendChild(verdict);
   }
@@ -275,21 +261,21 @@
       countVisit();
       const size = document.createElement('div');
       size.className = 'muted';
-      size.textContent = fmt(file.size) + ' vers ' + fmt(blob.size);
+      size.textContent = t('file.to', { a: fmt(file.size), b: fmt(blob.size) });
       left.appendChild(size);
 
       const a = document.createElement('a');
       a.className = 'btn';
-      a.textContent = 'Télécharger';
+      a.textContent = t('file.download');
       a.href = URL.createObjectURL(blob);
       a.download = file.name.replace(/\.[^.]+$/, '') + '-clean.' + ext;
       li.appendChild(a);
     } catch (e) {
       const err = document.createElement('div');
       err.className = 'muted';
-      if (e instanceof RangeError && e.message === 'fichier trop volumineux') err.textContent = 'Fichier trop volumineux (limite : 40 Mo).';
-      else if (e instanceof TypeError) err.textContent = 'Format non pris en charge.';
-      else err.textContent = 'Impossible de lire ce fichier.';
+      if (e instanceof RangeError && e.message === 'fichier trop volumineux') err.textContent = t('file.big');
+      else if (e instanceof TypeError) err.textContent = t('file.format');
+      else err.textContent = t('file.read');
       left.appendChild(err);
     }
   }

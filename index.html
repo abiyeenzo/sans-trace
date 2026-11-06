@@ -17,120 +17,127 @@
       <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#16231c"/><path d="M9 21c3-8 6-8 7-3s4 3 7-5" fill="none" stroke="#4ade80" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span>Sans Trace</span>
     </a>
-    <nav class="tabs" role="tablist">
-      <button role="tab" id="tab-text" aria-selected="true" aria-controls="panel-text">Texte</button>
-      <button role="tab" id="tab-image" aria-selected="false" aria-controls="panel-image">Images</button>
-      <button role="tab" id="tab-doc" aria-selected="false" aria-controls="panel-doc">Documents</button>
-    </nav>
+    <div class="top-right">
+      <nav class="tabs" role="tablist">
+        <button role="tab" id="tab-text" aria-selected="true" aria-controls="panel-text" data-i18n="tab.text">Texte</button>
+        <button role="tab" id="tab-image" aria-selected="false" aria-controls="panel-image" data-i18n="tab.image">Images</button>
+        <button role="tab" id="tab-doc" aria-selected="false" aria-controls="panel-doc" data-i18n="tab.doc">Documents</button>
+      </nav>
+      <div class="lang" role="group" aria-label="Langue / Language">
+        <button type="button" data-lang="fr" aria-pressed="true" lang="fr">FR</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+      </div>
+    </div>
   </header>
 
   <main>
     <section id="panel-text" role="tabpanel" aria-labelledby="tab-text">
-      <h1>Un texte qui sonne comme toi</h1>
-      <p class="lead">Colle un texte généré par une IA. Sans Trace retire les formules toutes faites, les tirets longs, les caractères invisibles et les restes de mise en forme, puis remplace les tics de style les plus courants.</p>
+      <h1 data-i18n="text.h1">Un texte qui sonne comme toi</h1>
+      <p class="lead" data-i18n="text.lead">Colle un texte généré par une IA. Sans Trace retire les formules toutes faites, les tirets longs, les caractères invisibles et les restes de mise en forme, puis remplace les tics de style les plus courants.</p>
 
       <div class="grid">
         <div class="col">
-          <label for="in">Texte d'origine</label>
-          <textarea id="in" rows="14" spellcheck="false" placeholder="Colle ton texte ici"></textarea>
+          <label for="in" data-i18n="text.in">Texte d'origine</label>
+          <textarea id="in" rows="14" spellcheck="false" placeholder="Colle ton texte ici" data-i18n-ph="text.in.ph"></textarea>
         </div>
         <div class="col">
-          <label for="out">Résultat</label>
+          <label for="out" data-i18n="text.out">Résultat</label>
           <textarea id="out" rows="14" spellcheck="false" readonly></textarea>
         </div>
       </div>
 
       <fieldset class="opts">
-        <legend>Options</legend>
-        <label><input type="checkbox" id="o-boilerplate" checked> Phrases d'assistant ("Voici…", "J'espère que cela aide")</label>
-        <label><input type="checkbox" id="o-citations" checked> Résidus de citations et liens suivis</label>
-        <label><input type="checkbox" id="o-invisible" checked> Caractères invisibles</label>
-        <label><input type="checkbox" id="o-markdown" checked> Gras, titres et séparateurs Markdown</label>
-        <label><input type="checkbox" id="o-dashes" checked> Tirets longs</label>
-        <label><input type="checkbox" id="o-emoji"> Emojis</label>
-        <label><input type="checkbox" id="o-humanize" checked> Remplacer les tics de style</label>
-        <label><input type="checkbox" id="o-contractions" checked> Contractions (anglais)</label>
-        <label class="inline">Langue
-          <select id="o-lang"><option value="auto">Détection auto</option><option value="fr">Français</option><option value="en">English</option></select>
+        <legend data-i18n="opts.legend">Options</legend>
+        <label><input type="checkbox" id="o-boilerplate" checked> <span data-i18n="o.boilerplate">Phrases d'assistant ("Voici…", "J'espère que cela aide")</span></label>
+        <label><input type="checkbox" id="o-citations" checked> <span data-i18n="o.citations">Résidus de citations et liens suivis</span></label>
+        <label><input type="checkbox" id="o-invisible" checked> <span data-i18n="o.invisible">Caractères invisibles</span></label>
+        <label><input type="checkbox" id="o-markdown" checked> <span data-i18n="o.markdown">Gras, titres et séparateurs Markdown</span></label>
+        <label><input type="checkbox" id="o-dashes" checked> <span data-i18n="o.dashes">Tirets longs</span></label>
+        <label><input type="checkbox" id="o-emoji"> <span data-i18n="o.emoji">Emojis</span></label>
+        <label><input type="checkbox" id="o-humanize" checked> <span data-i18n="o.humanize">Remplacer les tics de style</span></label>
+        <label><input type="checkbox" id="o-contractions" checked> <span data-i18n="o.contractions">Contractions (anglais)</span></label>
+        <label class="inline"><span data-i18n="o.lang">Langue du texte</span>
+          <select id="o-lang"><option value="auto" data-i18n="o.lang.auto">Détection auto</option><option value="fr" lang="fr">Français</option><option value="en" lang="en">English</option></select>
         </label>
       </fieldset>
 
       <div class="actions">
-        <button id="copy" class="btn">Copier le résultat</button>
+        <button id="copy" class="btn" data-i18n="copy">Copier le résultat</button>
         <span id="copied" class="muted" role="status"></span>
       </div>
 
       <div id="report" class="report" hidden></div>
 
       <section id="marked-box" class="marked-box" hidden>
-        <h2>Passages repérés dans ton texte</h2>
-        <p class="muted">Survole un passage surligné pour voir pourquoi il est repéré. Un humain écrit parfois ainsi : c'est un indice, pas une preuve.</p>
+        <h2 data-i18n="marked.h">Passages repérés dans ton texte</h2>
+        <p class="muted" data-i18n="marked.p">Survole un passage surligné pour voir pourquoi il est repéré. Un humain écrit parfois ainsi : c'est un indice, pas une preuve.</p>
         <div id="marked" class="marked" tabindex="0"></div>
       </section>
 
       <form id="feedback" class="feedback" hidden>
-        <p class="fb-title">Aide-nous à améliorer l'outil. Seul ton choix est envoyé, jamais ton texte.</p>
+        <p class="fb-title" data-i18n="fb.title">Aide-nous à améliorer l'outil. Seul ton choix est envoyé, jamais ton texte.</p>
         <fieldset>
-          <legend>Ce texte d'origine est</legend>
-          <label><input type="radio" name="fb-label" value="ai"> écrit par une IA</label>
-          <label><input type="radio" name="fb-label" value="human"> écrit par moi</label>
-          <label><input type="radio" name="fb-label" value="mixed"> mélangé</label>
-          <label><input type="radio" name="fb-label" value="unknown" checked> je ne sais pas</label>
+          <legend data-i18n="fb.l1">Ce texte d'origine est</legend>
+          <label><input type="radio" name="fb-label" value="ai"> <span data-i18n="fb.ai">écrit par une IA</span></label>
+          <label><input type="radio" name="fb-label" value="human"> <span data-i18n="fb.human">écrit par moi</span></label>
+          <label><input type="radio" name="fb-label" value="mixed"> <span data-i18n="fb.mixed">mélangé</span></label>
+          <label><input type="radio" name="fb-label" value="unknown" checked> <span data-i18n="fb.unknown">je ne sais pas</span></label>
         </fieldset>
         <fieldset>
-          <legend>Le résultat sonne naturel ?</legend>
-          <label><input type="radio" name="fb-helpful" value="yes"> oui</label>
-          <label><input type="radio" name="fb-helpful" value="no"> non</label>
-          <label><input type="radio" name="fb-helpful" value="skip" checked> sans avis</label>
+          <legend data-i18n="fb.l2">Le résultat sonne naturel ?</legend>
+          <label><input type="radio" name="fb-helpful" value="yes"> <span data-i18n="fb.yes">oui</span></label>
+          <label><input type="radio" name="fb-helpful" value="no"> <span data-i18n="fb.no">non</span></label>
+          <label><input type="radio" name="fb-helpful" value="skip" checked> <span data-i18n="fb.skip">sans avis</span></label>
         </fieldset>
-        <button type="submit" class="btn alt">Envoyer mon retour</button>
+        <button type="submit" class="btn alt" data-i18n="fb.send">Envoyer mon retour</button>
         <span id="fb-status" class="muted" role="status"></span>
       </form>
     </section>
 
     <section id="panel-image" role="tabpanel" aria-labelledby="tab-image" hidden>
-      <h1>Des images sans métadonnées</h1>
-      <p class="lead">Retire les EXIF (GPS compris), le XMP, les Content Credentials C2PA et les prompts écrits dans les PNG. Les pixels ne sont pas modifiés : pas de perte de qualité. JPEG, PNG et WebP.</p>
+      <h1 data-i18n="img.h1">Des images sans métadonnées</h1>
+      <p class="lead" data-i18n="img.lead">Retire les EXIF (GPS compris), le XMP, les Content Credentials C2PA et les prompts écrits dans les PNG. Les pixels ne sont pas modifiés : pas de perte de qualité. JPEG, PNG et WebP.</p>
 
       <div id="drop" class="drop" tabindex="0">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
-        <p>Dépose des images ici ou <label for="file" class="link">choisis des fichiers</label></p>
+        <p><span data-i18n="img.drop">Dépose des images ici ou</span> <label for="file" class="link" data-i18n="drop.choose">choisis des fichiers</label></p>
         <input id="file" type="file" accept="image/*" multiple hidden>
       </div>
 
       <ul id="files" class="files"></ul>
 
-      <p class="note">Limites : une image générée peut aussi porter un filigrane invisible dans ses pixels. Sans Trace ne cherche pas à le retirer. Les formats autres que JPEG, PNG et WebP sont convertis en PNG.</p>
+      <p class="note" data-i18n="img.note">Limites : une image générée peut aussi porter un filigrane invisible dans ses pixels. Sans Trace ne cherche pas à le retirer. Les formats autres que JPEG, PNG et WebP sont convertis en PNG.</p>
     </section>
 
     <section id="panel-doc" role="tabpanel" aria-labelledby="tab-doc" hidden>
-      <h1>Des documents sans signature</h1>
-      <p class="lead">Retire l'auteur, le logiciel, les dates et les propriétés personnalisées des PDF, DOCX, XLSX et PPTX. Le contenu du document n'est pas modifié.</p>
+      <h1 data-i18n="doc.h1">Des documents sans signature</h1>
+      <p class="lead" data-i18n="doc.lead">Retire l'auteur, le logiciel, les dates et les propriétés personnalisées des PDF, DOCX, XLSX et PPTX. Le contenu du document n'est pas modifié.</p>
 
       <div id="drop-doc" class="drop" tabindex="0">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
-        <p>Dépose des documents ici ou <label for="file-doc" class="link">choisis des fichiers</label></p>
+        <p><span data-i18n="doc.drop">Dépose des documents ici ou</span> <label for="file-doc" class="link" data-i18n="drop.choose">choisis des fichiers</label></p>
         <input id="file-doc" type="file" accept=".pdf,.docx,.xlsx,.pptx,application/pdf" multiple hidden>
       </div>
 
       <ul id="files-doc" class="files"></ul>
 
-      <p class="note">Limites : le texte, les images intégrées, les commentaires et l'historique de révisions restent tels quels. Les PDF chiffrés ne sont pas traités, et un champ stocké dans un flux compressé est signalé sans être modifié.</p>
+      <p class="note" data-i18n="doc.note">Limites : le texte, les images intégrées, les commentaires et l'historique de révisions restent tels quels. Les PDF chiffrés ne sont pas traités, et un champ stocké dans un flux compressé est signalé sans être modifié.</p>
     </section>
   </main>
 
   <footer>
-    <span>Textes et images traités dans ton navigateur. Par Abiye Enzo, code ouvert non commercial.</span>
+    <span data-i18n="footer.text">Textes et images traités dans ton navigateur. Par Abiye Enzo, code ouvert non commercial.</span>
     <nav class="links">
-      <a href="stats.html">Statistiques</a>
-      <a href="privacy.html">Confidentialité</a>
-      <a href="legal.html">Mentions légales</a>
-      <a href="terms.html">Conditions</a>
-      <a href="https://github.com/abiyeenzo/sans-trace" rel="noopener noreferrer">Code source</a>
-      <a href="https://github.com/abiyeenzo/sans-trace/blob/main/CONTRIBUTING.md" rel="noopener noreferrer">Contribuer</a>
+      <a href="stats.html" data-i18n="f.stats">Statistiques</a>
+      <a href="privacy.html" data-i18n="f.privacy">Confidentialité</a>
+      <a href="legal.html" data-i18n="f.legal">Mentions légales</a>
+      <a href="terms.html" data-i18n="f.terms">Conditions</a>
+      <a href="https://github.com/abiyeenzo/sans-trace" rel="noopener noreferrer" data-i18n="f.source">Code source</a>
+      <a href="https://github.com/abiyeenzo/sans-trace/blob/main/CONTRIBUTING.md" rel="noopener noreferrer" data-i18n="f.contribute">Contribuer</a>
     </nav>
   </footer>
 
+  <script src="js/i18n.js"></script>
   <script src="js/text-clean.js"></script>
   <script src="js/image-clean.js"></script>
   <script src="js/doc-clean.js"></script>
