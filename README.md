@@ -1,10 +1,12 @@
 # Sans Trace
 
-Outil gratuit qui nettoie les traces d'IA dans les textes et les images, directement dans le navigateur.
+Outil gratuit qui nettoie les traces d'IA dans les textes, les images et les documents, directement dans le navigateur. Pas de compte, pas d'envoi de données, pas de build.
+
+**[Essayer en ligne : sans-trace.vercel.app](https://sans-trace.vercel.app)**
+
+![Démo : un texte généré par une IA nettoyé en un instant](docs/media/demo.gif)
 
 Créé et maintenu par **Abiye Enzo** : [abiyeenzo.vercel.app](https://abiyeenzo.vercel.app) | [abiyeenzo.github.io](https://abiyeenzo.github.io) | abiyeenzo@gmail.com
-
-Site en ligne : https://sans-trace.vercel.app
 
 ## Ce que fait Sans Trace
 
